@@ -1,13 +1,15 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using MealPlanner.Models;
 
-namespace MealPlanner.Data
+namespace MealPlanner.Data;
+
+public class ApplicationDbContext : IdentityDbContext<AppUser>
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        : base(options)
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
-        {
-        }
     }
+
+    public DbSet<Meal> Meals { get; set; }
 }

@@ -1,0 +1,27 @@
+﻿@model IEnumerable<MealPlanner.Models.Meal>
+
+@{
+    ViewData["Title"] = "Mina Måltider";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Namn</th>
+            <th>Datum</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var meal in Model)
+        {
+            <tr>
+                <td>@meal.Name</td>
+                <td>@meal.Date.ToShortDateString()</td>
+                <td>@meal.Status</td>
+            </tr>
+        }
+    </tbody>
+</table>
