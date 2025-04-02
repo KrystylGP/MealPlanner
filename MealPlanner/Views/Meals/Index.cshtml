@@ -1,4 +1,6 @@
-﻿@model IEnumerable<MealPlanner.Models.Meal>
+﻿@using MealPlanner.Data.Entities
+@model IEnumerable<Meal>
+
 
 @{
     ViewData["Title"] = "Mina Måltider";
@@ -6,12 +8,13 @@
 
 <h2>@ViewData["Title"]</h2>
 
+<a asp-action="Create" class="btn btn-primary mb-3">Skapa ny måltid</a>
 <table>
     <thead>
         <tr>
             <th>Namn</th>
-            <th>Datum</th>
-            <th>Status</th>
+            <th>Ingredienser</th>
+            <th>Tillagningstid</th>
         </tr>
     </thead>
     <tbody>
@@ -19,8 +22,8 @@
         {
             <tr>
                 <td>@meal.Name</td>
-                <td>@meal.Date.ToShortDateString()</td>
-                <td>@meal.Status</td>
+                <td>@string.Join(", ", meal.Ingredients.Select(i => i.Name))</td>
+                <td>@meal.CookingTime</td>
             </tr>
         }
     </tbody>
