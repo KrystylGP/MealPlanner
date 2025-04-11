@@ -1,29 +1,44 @@
 ﻿using MealPlanner.Data.Entities;
 using MealPlanner.Data.Repositories;
+using MealPlanner.Models.VM;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace MealPlanner.Services;
-
-public class MealService
+namespace MealPlanner.Services
 {
-    private readonly MealRepository _repository;
-
-    public MealService(MealRepository repository)
+    public class MealService
     {
-        _repository = repository;
+        private readonly MealRepository _repository;
+
+        public MealService(MealRepository repository)
+        {
+            _repository = repository;
+        }
+
+        public Task<List<Meal>> GetAllMealsAsync() =>
+            _repository.GetAllAsync().ContinueWith(t => t.Result.ToList());
+
+        public Task<Meal?> GetMealByIdAsync(int id) =>
+            _repository.GetAsync(m => m.Id == id);
+
+        public Task<bool> AddMealAsync(Meal meal) =>
+            _repository.AddAsync(meal);
+
+        public Task<bool> UpdateMealAsync(Meal meal) =>
+            _repository.UpdateAsync(meal);
+
+        public Task<bool> DeleteMealAsync(Meal meal) =>
+            _repository.DeleteAsync(meal);
+
+        public Task<Meal?> GetMealWithIngredientsByIdAsync(int id) =>
+            _repository.GetMealWithIngredientsByIdAsync(id);
+
+        public List<IngredientSelection> GetAllIngredientsForMealCreate()
+        {
+            return _repository.GetAllIngredientsAsync().Result
+                .Select(i => new IngredientSelection { IngredientId = i.Id, Name = i.Name })
+                .ToList();
+        }
     }
-
-    public Task<List<Meal>> GetAllMealsAsync() =>
-        _repository.GetAllWithIngredientsAsync();
-
-    public Task<Meal?> GetMealByIdAsync(int id) =>
-       _repository.GetByIdWithIngredientsAsync(id);
-
-    public Task<bool> AddMealsAsync(Meal meal) =>
-       _repository.AddAsync(meal);
-
-    public Task<bool> UpdateMealAsync(Meal meal) =>
-      _repository.AddAsync(meal);
-
-    public Task<bool> DeleteMealAsync(Meal meal) =>
-      _repository.AddAsync(meal);
 }

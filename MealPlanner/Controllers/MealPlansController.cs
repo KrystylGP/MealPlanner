@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using MealPlanner.Models.Enums;
+using MealPlanner.Models.ViewModel;
 
 
 namespace MealPlanner.Controllers;
@@ -44,6 +45,7 @@ public class MealPlansController : Controller
         return View();
     }
 
+    // POST: MealPlans/Create
     [HttpPost]
     public async Task<IActionResult> Create (MealPlan mealPlan)
     {
@@ -61,11 +63,12 @@ public class MealPlansController : Controller
     }
 
     // GET: MealPlans/Edit
-    public async  Task<IActionResult> Edit(int id)
+    public async Task<IActionResult> Edit(int id)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         var mealPlan = await _context.MealPlans
+            .Include(mp => mp.Meals)
             .FirstOrDefaultAsync(mp => mp.Id == id && mp.UserId == userId);
 
         if (mealPlan == null)
@@ -73,41 +76,70 @@ public class MealPlansController : Controller
             return NotFound();
         }
 
-        return View(mealPlan);
+        var userMeals = await _context.Meals
+            .Where(m => m.MealPlans.Any(mp => mp.UserId == userId) || m.MealPlans.Count == 0)
+            .ToListAsync();
+
+        var viewModel = new MealPlanner.Models.ViewModel.MealPlanEditViewModel
+        {
+            Id = mealPlan.Id,
+            Title = mealPlan.Title,
+            StartDate = mealPlan.StartDate,
+            EndDate = mealPlan.EndDate,
+            Status = mealPlan.Status,
+            SelectedMealIds = mealPlan.Meals.Select(m => m.Id).ToList(),
+            AvailableMeals = userMeals
+        };
+
+        return View(viewModel);
     }
 
     // POST: MealPlans/Edit
     [HttpPost]
-    public async Task<IActionResult> Edit(int id, MealPlan mealPlan)
+    public async Task<IActionResult> Edit(int id, MealPlanEditViewModel model)
     {
-        if (id != mealPlan.Id)
-        {
+        if (id != model.Id)
             return BadRequest();
-        }
-        
+
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        var existingPlan = await _context.MealPlans
+        var mealPlan = await _context.MealPlans
+            .Include(mp => mp.Meals)
             .FirstOrDefaultAsync(mp => mp.Id == id && mp.UserId == userId);
 
-        if (existingPlan == null)
-        {
+        if (mealPlan == null)
             return NotFound();
-        }
 
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
         {
-            existingPlan.Title = mealPlan.Title;
-            existingPlan.StartDate = mealPlan.StartDate;
-            existingPlan.EndDate = mealPlan.EndDate;
-            existingPlan.Status = mealPlan.Status;
+            model.AvailableMeals = await _context.Meals
+                .Where(m => m.MealPlans.Any(mp => mp.UserId == userId) || m.MealPlans.Count == 0)
+                .ToListAsync();
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Index");
+            return View(model);
         }
 
-        return View(existingPlan);
+        mealPlan.Title = model.Title;
+        mealPlan.StartDate = model.StartDate;
+        mealPlan.EndDate = model.EndDate;
+        mealPlan.Status = model.Status;
+
+        // Uppdatera måltider
+        var selectedMeals = await _context.Meals
+            .Where(m => model.SelectedMealIds.Contains(m.Id))
+            .ToListAsync();
+
+        mealPlan.Meals.Clear();
+        foreach (var meal in selectedMeals)
+        {
+            mealPlan.Meals.Add(meal);
+        }
+
+        await _context.SaveChangesAsync();
+        return RedirectToAction(nameof(Index));
     }
+
+
 
     // GET: MealPlans/Delete
     public async Task<IActionResult> Delete(int id)
@@ -142,7 +174,7 @@ public class MealPlansController : Controller
         _context.MealPlans.Remove(mealPlan);
         await _context.SaveChangesAsync();
 
-        return RedirectToAction("Index");
+        return RedirectToAction(nameof(Index));
     }
 
     // GET: MealPlans/AddMeal
@@ -159,6 +191,7 @@ public class MealPlansController : Controller
         return View(mealPlan);
     }
 
+    // POST: MealPlans/AddMeal
     [HttpPost]
     public async Task<IActionResult> AddMeal (int mealPlanId, int mealId)
     {
@@ -177,7 +210,7 @@ public class MealPlansController : Controller
             await _context.SaveChangesAsync();
         }
 
-        return RedirectToAction("Index");
+        return RedirectToAction(nameof(Index));
     }
 
 }

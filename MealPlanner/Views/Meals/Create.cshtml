@@ -1,0 +1,42 @@
+﻿@model MealPlanner.Models.VM.MealCreateViewModel
+
+@{
+    ViewData["Title"] = "Skapa ny måltid";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="CookingTime"></label>
+        <input asp-for="CookingTime" type="number" class="form-control" />
+        <span asp-validation-for="CookingTime" class="text-danger"></span>
+    </div>
+
+    <h4>Ingredienser</h4>
+
+    @for (int i = 0; i < Model.Ingredients.Count; i++)
+    {
+            <div class="form-check mb-2">
+                <input type="checkbox" asp-for="Ingredients[@i].Selected" class="form-check-input" />
+                <input type="hidden" asp-for="Ingredients[@i].IngredientId" />
+                <label class="form-check-label">@Model.Ingredients[i].Name</label>
+
+                <input type="number" asp-for="Ingredients[@i].Quantity" class="form-control mt-1" placeholder="Mängd" min="0" />
+            </div>
+    }
+
+    <button type="submit" class="btn btn-primary">Skapa</button>
+</form>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

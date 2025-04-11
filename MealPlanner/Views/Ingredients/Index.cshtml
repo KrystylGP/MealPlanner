@@ -1,0 +1,45 @@
+﻿@model IEnumerable<MealPlanner.Data.Entities.Ingredient>
+
+@functions {
+    @using System.ComponentModel.DataAnnotations;
+    @using System.Reflection;
+
+    // Vyn visar svenska enum-värden istället för engelska
+    string GetDisplayName(Enum enumValue)
+    {
+        var displayAttribute = enumValue.GetType()
+            .GetMember(enumValue.ToString())
+            .First()
+            .GetCustomAttribute<DisplayAttribute>();
+
+        return displayAttribute?.Name ?? enumValue.ToString();
+    }
+}
+
+@{
+    ViewData["Title"] = "Ingredienser";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<p>
+    <a class="btn btn-primary" asp-action="Create">Lägg till ingrediens</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Namn</th>
+            <th>Typ</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var ingredient in Model)
+        {
+            <tr>
+                <td>@ingredient.Name</td>
+                <td>@GetDisplayName(ingredient.Type)</td>
+            </tr>
+        }
+    </tbody>
+</table>

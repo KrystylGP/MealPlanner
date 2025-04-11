@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MealPlanner.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250325110809_AddManyToManyMealPlanMeal")]
-    partial class AddManyToManyMealPlanMeal
+    [Migration("20250404200552_InitClean")]
+    partial class InitClean
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -134,10 +134,10 @@ namespace MealPlanner.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("MealPlan");
+                    b.ToTable("MealPlans");
                 });
 
-            modelBuilder.Entity("MealPlanner.Models.Ingredient", b =>
+            modelBuilder.Entity("MealPlanner.Data.Entities.Ingredient", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -145,24 +145,20 @@ namespace MealPlanner.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("MealId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(24)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("MealId");
 
                     b.ToTable("Ingredients");
                 });
 
-            modelBuilder.Entity("MealPlanner.Models.Meal", b =>
+            modelBuilder.Entity("MealPlanner.Data.Entities.Meal", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -327,7 +323,7 @@ namespace MealPlanner.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MealPlanner.Models.Meal", null)
+                    b.HasOne("MealPlanner.Data.Entities.Meal", null)
                         .WithMany()
                         .HasForeignKey("MealsId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -343,13 +339,6 @@ namespace MealPlanner.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("MealPlanner.Models.Ingredient", b =>
-                {
-                    b.HasOne("MealPlanner.Models.Meal", null)
-                        .WithMany("Ingredients")
-                        .HasForeignKey("MealId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -406,11 +395,6 @@ namespace MealPlanner.Migrations
             modelBuilder.Entity("AppUser", b =>
                 {
                     b.Navigation("MealPlans");
-                });
-
-            modelBuilder.Entity("MealPlanner.Models.Meal", b =>
-                {
-                    b.Navigation("Ingredients");
                 });
 #pragma warning restore 612, 618
         }

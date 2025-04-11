@@ -1,0 +1,54 @@
+﻿@using MealPlanner.Models.Enums
+@using MealPlanner.Helpers
+@model IEnumerable<MealPlan>
+
+@{
+    ViewData["Title"] = "Mina Måltidsplaner";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">Skapa ny måltidsplan</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Titel</th>
+            <th>Startdatum</th>
+            <th>Slutdatum</th>
+            <th>Status</th>
+            <th>Måltider</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var plan in Model)
+        {
+            <tr>
+                <td>@plan.Title</td>
+                <td>@plan.StartDate.ToShortDateString()</td>
+                <td>@plan.EndDate.ToShortDateString()</td>
+                <td>@plan.Status.GetDisplayName()</td>
+                <td>
+                    @if (plan.Meals.Any())
+                    {
+                        <ul>
+                            @foreach(var meal in plan.Meals)
+                            {
+                                <li>@meal.Name</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <span>Inga måltider</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@plan.Id">Redigera</a> |
+                    <a asp-action="Delete" asp-route-id="@plan.Id">Ta bort</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

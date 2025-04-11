@@ -1,0 +1,25 @@
+﻿@model MealPlanner.Data.Entities.Ingredient
+
+@{
+    ViewData["Title"] = "Ta bort ingrediens";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<h3>Är du säker på att du vill ta bort denna ingrediens?</h3>
+
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">Namn</dt>
+        <dt class="col-sm-10">@Model.Name</dt>
+
+        <dt class="col-sm-2">Typ</dt>
+        <dt class="col-sm-2">@Model.Type</dt>
+    </dl>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="Id"/>
+        <button type="submit" class="btn btn-danger">Ta bort</button>
+        <a asp-action="Index" class="btn btn-secondary">Avbryt</a>
+    </form>
+</div>

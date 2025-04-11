@@ -1,4 +1,4 @@
-namespace MealPlanner.Models
+namespace MealPlanner.Models.VM
 {
     public class ErrorViewModel
     {

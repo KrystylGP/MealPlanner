@@ -9,10 +9,10 @@ public class Meal
 
     [Required]
     public string Name { get; set; } = null!;
-    public ICollection<Ingredient> Ingredients { get; set; } = new List<Ingredient>();
     public int CookingTime { get; set; }
 
 
     public ICollection<MealPlan> MealPlans { get; set; } = new List<MealPlan>();
+    public ICollection<MealIngredient> MealIngredients { get; set; } = new List<MealIngredient>();
 
 }

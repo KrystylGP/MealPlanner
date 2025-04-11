@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MealPlanner.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitClean : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -48,6 +48,34 @@ namespace MealPlanner.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Ingredients",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(24)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ingredients", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Meals",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CookingTime = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Meals", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -157,24 +185,48 @@ namespace MealPlanner.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Meals",
+                name: "MealPlans",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Ingredients = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Meals", x => x.Id);
+                    table.PrimaryKey("PK_MealPlans", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Meals_AspNetUsers_UserId",
+                        name: "FK_MealPlans_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MealMealPlan",
+                columns: table => new
+                {
+                    MealPlansId = table.Column<int>(type: "int", nullable: false),
+                    MealsId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MealMealPlan", x => new { x.MealPlansId, x.MealsId });
+                    table.ForeignKey(
+                        name: "FK_MealMealPlan_MealPlans_MealPlansId",
+                        column: x => x.MealPlansId,
+                        principalTable: "MealPlans",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MealMealPlan_Meals_MealsId",
+                        column: x => x.MealsId,
+                        principalTable: "Meals",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -219,8 +271,13 @@ namespace MealPlanner.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Meals_UserId",
-                table: "Meals",
+                name: "IX_MealMealPlan_MealsId",
+                table: "MealMealPlan",
+                column: "MealsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MealPlans_UserId",
+                table: "MealPlans",
                 column: "UserId");
         }
 
@@ -243,10 +300,19 @@ namespace MealPlanner.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Meals");
+                name: "Ingredients");
+
+            migrationBuilder.DropTable(
+                name: "MealMealPlan");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "MealPlans");
+
+            migrationBuilder.DropTable(
+                name: "Meals");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

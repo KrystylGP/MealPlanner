@@ -1,105 +1,131 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using MealPlanner.Data.Entities;
+using MealPlanner.Models.VM;  
 using MealPlanner.Services;
+using System.Threading.Tasks;
 
-namespace MealPlanner.Controllers;
-
-// Skyddar hela controllern, endast inloggade användare får åtkomst.
-[Authorize]
-public class MealsController : Controller
+namespace MealPlanner.Controllers
 {
-    private readonly MealService _mealService;
-
-    public MealsController(MealService mealService)
+    [Authorize]
+    public class MealsController : Controller
     {
-        _mealService = mealService;
-    }
+        private readonly MealService _mealService;
 
-    // Visar användarens meals
-    public async Task<IActionResult> Index()
-    {
-        var meals = await _mealService.GetAllMealsAsync();
-        return View(meals);
-    }
-
-    // GET: Meals/Create
-    public IActionResult Create()
-    {
-        return View();
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Create(Meal meal)
-    {
-        if (ModelState.IsValid)
+        public MealsController(MealService mealService)
         {
-            meal.Ingredients = meal.Ingredients
-                .Where(i => !string.IsNullOrWhiteSpace(i.Name))
-                .ToList();
-
-            await _mealService.AddMealsAsync(meal);
-            return RedirectToAction("Index");
+            _mealService = mealService;
         }
 
-        return View(meal);
-    }
-
-    //GET: Meals/Edit
-    public async Task<IActionResult> Edit(int id)
-    {
-        var meal = await _mealService.GetMealByIdAsync(id);
-        if (meal == null)
-            return NotFound();
-
-        return View(meal);
-    }
-
-    // POST: Meals/Edit
-    [HttpPost]
-    public async Task<IActionResult> Edit(int id, Meal meal)
-    {
-        if (id != meal.Id)
-            return BadRequest();
-
-        if (ModelState.IsValid)
+        // GET: Meals/Index
+        public async Task<IActionResult> Index()
         {
-            var existingMeal = await _mealService.GetMealByIdAsync(id);
-            if (existingMeal == null)
-                return NotFound(); // Om måltiden inte finns, returnera 404.
-
-            existingMeal.Name = meal.Name;
-            existingMeal.CookingTime = meal.CookingTime;
-            existingMeal.Ingredients = meal.Ingredients
-                .Where(i => !string.IsNullOrWhiteSpace(i.Name))
-                .ToList();
-
-            await _mealService.UpdateMealAsync(existingMeal); // Sparar uppdateringen i databasen.
-            return RedirectToAction("Index");
+            var meals = await _mealService.GetAllMealsAsync();
+            return View(meals);
         }
 
-        return View(meal);
-    }
+        // GET: Meals/Create
+        public IActionResult Create()
+        {
+            // Using a MealCreateViewModel that contains a list of available ingredients
+            var viewModel = new MealCreateViewModel
+            {
+                Ingredients = _mealService.GetAllIngredientsForMealCreate()
+            };
 
-    // GET: Meals/Delete
-    public async Task<IActionResult> Delete(int id)
-    {
-        var meal = await _mealService.GetMealByIdAsync(id);
-        if (meal == null)
-            return NotFound();
+            return View(viewModel);
+        }
 
-        return View(meal);
-    }
+        // POST: Meals/Create
+        [HttpPost]
+        public async Task<IActionResult> Create(MealCreateViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                model.Ingredients = _mealService.GetAllIngredientsForMealCreate();
+                return View(model);
+            }
 
-    // POST: Meals/Delete
-    [HttpPost, ActionName("Delete")]
-    public async Task<IActionResult> DeleteConfirmed(int id)
-    {
-        var meal = await _mealService.GetMealByIdAsync(id);
-        if (meal == null)
-            return NotFound();
 
-        await _mealService.DeleteMealAsync(meal);
-        return RedirectToAction("Index");
+            var meal = new Meal
+            {
+                Name = model.Name,
+                CookingTime = model.CookingTime,
+                MealIngredients = model.Ingredients
+                    .Where(i => i.Selected && i.Quantity > 0)
+                    .Select(i => new MealIngredient
+                    {
+                        IngredientId = i.IngredientId,
+                        Quantity = i.Quantity
+                    })
+                    .ToList()
+            };
+
+            await _mealService.AddMealAsync(meal);
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Meals/Edit
+        public async Task<IActionResult> Edit(int id)
+        {
+            var meal = await _mealService.GetMealByIdAsync(id);
+            if (meal == null)
+                return NotFound();
+
+            return View(meal);
+        }
+
+        // POST: Meals/Edit
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, Meal meal)
+        {
+            if (id != meal.Id)
+                return BadRequest();
+
+            if (ModelState.IsValid)
+            {
+                var result = await _mealService.UpdateMealAsync(meal);
+                if (!result)
+                    return NotFound();
+
+                return RedirectToAction(nameof(Index));
+            }
+            return View(meal);
+        }
+
+        // GET: Meals/Delete
+        public async Task<IActionResult> Delete(int id)
+        {
+            var meal = await _mealService.GetMealByIdAsync(id);
+            if (meal == null)
+                return NotFound();
+
+            return View(meal);
+        }
+
+        // POST: Meals/Delete
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var meal = await _mealService.GetMealByIdAsync(id);
+            if (meal == null)
+                return NotFound();
+
+            var result = await _mealService.DeleteMealAsync(meal);
+            if (!result)
+                return NotFound();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Meals/Details
+        public async Task<IActionResult> MealDetails(int id)
+        {
+            var meal = await _mealService.GetMealWithIngredientsByIdAsync(id);
+            if (meal == null)
+                return NotFound();
+
+            return View("MealDetails", meal);
+        }
     }
 }

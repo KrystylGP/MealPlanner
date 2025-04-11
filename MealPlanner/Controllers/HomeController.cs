@@ -1,4 +1,5 @@
 using MealPlanner.Models;
+using MealPlanner.Models.VM;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 

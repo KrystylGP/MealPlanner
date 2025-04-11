@@ -1,0 +1,32 @@
+﻿@model MealPlanner.Data.Entities.Meal
+
+@{
+    ViewData["Title"] = "Detaljer för måltid";
+}
+
+<h2>@Model.Name</h2>
+
+<p><strong>Tillagningstid:</strong> @Model.CookingTime minuter</p>
+
+<h4>Ingredienser:</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Namn</th>
+            <th>Typ</th>
+            <th>Antal</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var mi in Model.MealIngredients)
+        {
+            <tr>
+                <td>@mi.Ingredient.Name</td>
+                <td>@mi.Ingredient.Type</td>
+                <td>@mi.Quantity</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Index" class="btn btn-secondary">Tillbaka</a>

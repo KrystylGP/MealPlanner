@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MealPlanner.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250331150912_AddMealIngredientRelation")]
+    [Migration("20250408113929_AddMealIngredientRelation")]
     partial class AddMealIngredientRelation
     {
         /// <inheritdoc />
@@ -145,19 +145,15 @@ namespace MealPlanner.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("MealId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(24)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("MealId");
 
                     b.ToTable("Ingredients");
                 });
@@ -180,6 +176,21 @@ namespace MealPlanner.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Meals");
+                });
+
+            modelBuilder.Entity("MealPlanner.Data.Entities.MealIngredient", b =>
+                {
+                    b.Property<int>("MealId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IngredientId")
+                        .HasColumnType("int");
+
+                    b.HasKey("MealId", "IngredientId");
+
+                    b.HasIndex("IngredientId");
+
+                    b.ToTable("MealIngredients");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -345,13 +356,21 @@ namespace MealPlanner.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("MealPlanner.Data.Entities.Ingredient", b =>
+            modelBuilder.Entity("MealPlanner.Data.Entities.MealIngredient", b =>
                 {
+                    b.HasOne("MealPlanner.Data.Entities.Ingredient", "Ingredient")
+                        .WithMany("MealIngredients")
+                        .HasForeignKey("IngredientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("MealPlanner.Data.Entities.Meal", "Meal")
-                        .WithMany("Ingredients")
+                        .WithMany("MealIngredients")
                         .HasForeignKey("MealId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Ingredient");
 
                     b.Navigation("Meal");
                 });
@@ -412,9 +431,14 @@ namespace MealPlanner.Migrations
                     b.Navigation("MealPlans");
                 });
 
+            modelBuilder.Entity("MealPlanner.Data.Entities.Ingredient", b =>
+                {
+                    b.Navigation("MealIngredients");
+                });
+
             modelBuilder.Entity("MealPlanner.Data.Entities.Meal", b =>
                 {
-                    b.Navigation("Ingredients");
+                    b.Navigation("MealIngredients");
                 });
 #pragma warning restore 612, 618
         }

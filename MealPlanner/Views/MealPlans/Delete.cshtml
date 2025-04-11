@@ -1,0 +1,32 @@
+﻿@using MealPlanner.Helpers
+@model MealPlan
+
+@{
+    ViewData["Title"] = "Ta bort måltidsplan";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<h3>Är du säker på att du vill ta bort denna måltidsplan?</h3>
+
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">Titel</dt>
+        <dd class="col-sm-10">@Model.Title</dd>
+
+        <dt class="col-sm-2">Startdatum</dt>
+        <dd class="col-sm-10">@Model.StartDate.ToShortDateString()</dd>
+
+        <dt class="col-sm-2">Slutdatum</dt>
+        <dd class="col-sm-10">@Model.EndDate.ToShortDateString()</dd>
+
+        <dt class="col-sm-2">Status</dt>
+        <dd class="col-sm-10">@Model.Status.GetDisplayName()</dd>
+    </dl>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">Ta bort</button>
+       <a asp-action="Index" class="btn btn-secondary">Avbryt</a> 
+    </form>
+</div>

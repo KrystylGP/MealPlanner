@@ -1,0 +1,22 @@
+﻿@model Dictionary<string, int>
+
+@{
+    ViewData["Title"] = "Att handla";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (!Model.Any())
+{
+    <p>Du har alla ingredienser hemma för dina måltider!</p>
+}
+else
+{
+    <ul>
+        @foreach (var item in Model)
+        {
+            <li>@item.Key @item.Value</li>
+        }
+    </ul>
+}
+

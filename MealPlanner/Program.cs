@@ -1,4 +1,5 @@
 using MealPlanner.Data;
+using MealPlanner.Data.MockData;
 using MealPlanner.Data.Repositories;
 using MealPlanner.Models;
 using MealPlanner.Services;
@@ -16,6 +17,9 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<IngredientRepository>();
+builder.Services.AddScoped<IngredientService>();
 
 builder.Services.AddScoped<MealPlanRepository>();
 builder.Services.AddScoped<MealPlanService>();
@@ -48,5 +52,13 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
+
+// TA BORT DETTA SEN
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<ApplicationDbContext>();
+    MealPlanner.Data.MockData.DataSeeder.Seed(context);
+}
 
 app.Run();

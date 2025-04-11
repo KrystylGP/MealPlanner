@@ -1,0 +1,39 @@
+﻿@model IEnumerable<MealPlanner.Data.Entities.UserIngredient>
+
+@{
+    ViewData["Title"] = "Mina ingredienser";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<p>
+    <a class="btn btn-primary" asp-action="AddUserIngredient" asp-controller="Ingredients">Lägg till ingrediens</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Namn</th>
+            <th>Typ</th>
+            <th>Antal</th>
+            <th>Åtgärder</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Ingredient.Name</td>
+                <td>@item.Ingredient.Type</td>
+                <td>@item.Quantity</td>
+                <td>
+                    <a asp-action="EditUserIngredient" asp-controller="Ingredients" asp-route-ingredientId="@item.IngredientId">Redigera</a> |
+                    <form asp-action="DeleteMyIngredient" method="post" style="display:inline;">
+                        <input type="hidden" name="ingredientId" value="@item.IngredientId" />
+                        <button type="submit" class="btn btn-danger btn-sm">Ta bort</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
