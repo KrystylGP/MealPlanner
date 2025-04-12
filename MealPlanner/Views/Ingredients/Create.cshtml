@@ -1,6 +1,6 @@
-﻿@model MealPlanner.Data.Entities.Ingredient
+﻿@model MealPlanner.Models.ViewModel.IngredientCreateViewModel
 @using MealPlanner.Models.Enums
-@addTagHelper *, Microsoft.aspNetCore.Mvc.Taghelpers
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
     ViewData["Title"] = "Lägg till ingrediens";
@@ -9,6 +9,8 @@
 <h2>@ViewData["Title"]</h2>
 
 <form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
     <div class="form-group">
         <label asp-for="Name" class="control-label"></label>
         <input asp-for="Name" class="form-control" />
@@ -24,3 +26,8 @@
     <button type="submit" class="btn btn-primary">Spara</button>
     <a asp-action="Index" class="btn btn-secondary">Tillbaka</a>
 </form>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script src="~/js/ValidateIngredient.js"></script>
+}

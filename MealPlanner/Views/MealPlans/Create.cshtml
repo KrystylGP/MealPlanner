@@ -1,13 +1,16 @@
-﻿@using MealPlanner.Models.Enums
-@model MealPlan
+﻿@model MealPlanner.Models.ViewModel.MealPlanCreateViewModel
 
-<h2>Skapa ny måltidsplan</h2>
+@{
+    ViewData["Title"] = "Skapa måltidsplan";
+}
+
+<h2>@ViewData["Title"]</h2>
 
 <form asp-action="Create" method="post">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
     <div class="form-group">
-        <label asp-for ="Title"></label>
+        <label asp-for="Title"></label>
         <input asp-for="Title" class="form-control" />
         <span asp-validation-for="Title" class="text-danger"></span>
     </div>
@@ -23,15 +26,27 @@
         <input asp-for="EndDate" type="date" class="form-control" />
         <span asp-validation-for="EndDate" class="text-danger"></span>
     </div>
+
     <div class="form-group">
         <label asp-for="Status"></label>
-        <select asp-for="Status" class="form-control" asp-items="Html.GetEnumSelectList<MealPlanStatus>()"></select>
+        <select asp-for="Status" class="form-control" asp-items="Html.GetEnumSelectList<MealPlanner.Models.Enums.MealPlanStatus>()"></select>
         <span asp-validation-for="Status" class="text-danger"></span>
     </div>
+
+    <h4>Välj måltider</h4>
+    @for (int i = 0; i < Model.Meals.Count; i++)
+    {
+        <div class="form-check mb-2">
+            <input type="checkbox" asp-for="Meals[@i].Selected" class="form-check-input" />
+            <input type="hidden" asp-for="Meals[@i].MealId" />
+            <label class="form-check-label">@Model.Meals[i].Name</label>
+        </div>
+    }
 
     <button type="submit" class="btn btn-primary">Skapa</button>
 </form>
 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script src="~/js/ValidateMealPlan.js"></script>
 }

@@ -1,4 +1,4 @@
-﻿@model MealPlanner.Models.VM.MealCreateViewModel
+﻿@model MealPlanner.Models.ViewModel.MealCreateViewModel
 
 @{
     ViewData["Title"] = "Skapa ny måltid";
@@ -25,13 +25,13 @@
 
     @for (int i = 0; i < Model.Ingredients.Count; i++)
     {
-            <div class="form-check mb-2">
-                <input type="checkbox" asp-for="Ingredients[@i].Selected" class="form-check-input" />
-                <input type="hidden" asp-for="Ingredients[@i].IngredientId" />
-                <label class="form-check-label">@Model.Ingredients[i].Name</label>
+        <div class="form-check mb-2">
+            <input type="checkbox" asp-for="Ingredients[@i].Selected" class="form-check-input" />
+            <input type="hidden" asp-for="Ingredients[@i].IngredientId" />
+            <label class="form-check-label">@Model.Ingredients[i].Name</label>
 
-                <input type="number" asp-for="Ingredients[@i].Quantity" class="form-control mt-1" placeholder="Mängd" min="0" />
-            </div>
+            <input type="number" asp-for="Ingredients[@i].Quantity" class="form-control mt-1" placeholder="Mängd" min="0" />
+        </div>
     }
 
     <button type="submit" class="btn btn-primary">Skapa</button>
@@ -39,4 +39,6 @@
 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script src="~/js/ValidateMealCreate.js"></script>
 }
+

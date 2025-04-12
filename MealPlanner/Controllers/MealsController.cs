@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using MealPlanner.Data.Entities;
-using MealPlanner.Models.VM;  
+using MealPlanner.Models.ViewModel;  
 using MealPlanner.Services;
 using System.Threading.Tasks;
 
@@ -27,7 +27,6 @@ namespace MealPlanner.Controllers
         // GET: Meals/Create
         public IActionResult Create()
         {
-            // Using a MealCreateViewModel that contains a list of available ingredients
             var viewModel = new MealCreateViewModel
             {
                 Ingredients = _mealService.GetAllIngredientsForMealCreate()
@@ -36,36 +35,29 @@ namespace MealPlanner.Controllers
             return View(viewModel);
         }
 
-        // POST: Meals/Create
         [HttpPost]
         public async Task<IActionResult> Create(MealCreateViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                model.Ingredients = _mealService.GetAllIngredientsForMealCreate();
+                model.Ingredients = await _mealService.GetIngredientSelectionsAsync();
                 return View(model);
             }
 
-
-            var meal = new Meal
+            var success = await _mealService.CreateMealAsync(model);
+            if (!success)
             {
-                Name = model.Name,
-                CookingTime = model.CookingTime,
-                MealIngredients = model.Ingredients
-                    .Where(i => i.Selected && i.Quantity > 0)
-                    .Select(i => new MealIngredient
-                    {
-                        IngredientId = i.IngredientId,
-                        Quantity = i.Quantity
-                    })
-                    .ToList()
-            };
+                ModelState.AddModelError("", "Kunde inte skapa måltiden.");
+                model.Ingredients = await _mealService.GetIngredientSelectionsAsync();
+                return View(model);
+            }
 
-            await _mealService.AddMealAsync(meal);
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Meals/Edit
+
+
+        // GET: Meals/Edit OBS ENDAST ADMIN EJ MED I FRONT END EJJ TILLÄMPAT
         public async Task<IActionResult> Edit(int id)
         {
             var meal = await _mealService.GetMealByIdAsync(id);
@@ -75,7 +67,7 @@ namespace MealPlanner.Controllers
             return View(meal);
         }
 
-        // POST: Meals/Edit
+        // POST: Meals/Edit OBS ENDAST ADMIN EJ MED I FRONT END EJJ TILLÄMPAT
         [HttpPost]
         public async Task<IActionResult> Edit(int id, Meal meal)
         {
@@ -93,7 +85,7 @@ namespace MealPlanner.Controllers
             return View(meal);
         }
 
-        // GET: Meals/Delete
+        // GET: Meals/Delete OBS ENDAST ADMIN EJ MED I FRONT END EJJ TILLÄMPAT
         public async Task<IActionResult> Delete(int id)
         {
             var meal = await _mealService.GetMealByIdAsync(id);
@@ -103,7 +95,7 @@ namespace MealPlanner.Controllers
             return View(meal);
         }
 
-        // POST: Meals/Delete
+        // POST: Meals/Delete OBS ENDAST ADMIN EJ MED I FRONT END EJJ TILLÄMPAT
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

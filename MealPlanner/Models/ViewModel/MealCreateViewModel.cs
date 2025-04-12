@@ -1,8 +1,15 @@
-﻿namespace MealPlanner.Models.VM
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace MealPlanner.Models.ViewModel
 {
     public class MealCreateViewModel
     {
-        public string Name { get; set; }
+        [Required(ErrorMessage = "Namn krävs.")]
+        [StringLength(100, ErrorMessage = "Namnet får vara max 100 tecken.")]
+        public string Name { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Tillagningstid krävs.")]
+        [Range(1, 300, ErrorMessage = "Tillagningstiden måste vara mellan 1 och 300 minuter.")]
         public int CookingTime { get; set; }
 
         public List<IngredientSelection> Ingredients { get; set; } = new();

@@ -44,7 +44,6 @@ public class IngredientsController : Controller
     // GET: Ingredients/AddUserIngredient
     public async Task<IActionResult> AddUserIngredient()
     {
-        // Fetch available ingredients from the service
         var availableIngredients = await _ingredientService.GetAllAsync();
 
         var model = new AddUserIngredientViewModel
@@ -72,7 +71,7 @@ public class IngredientsController : Controller
         return RedirectToAction(nameof(MyIngredients));
     }
 
-    // POST: Ingredients/DeleteMyIngredient
+    // POST: Ingredients/DeleteMyIngredient 
     [HttpPost]
     public async Task<IActionResult> DeleteMyIngredient(int ingredientId)
     {
@@ -96,7 +95,6 @@ public class IngredientsController : Controller
         if (userId == null)
             return Unauthorized();
 
-        // Calling the service to generate the grocery list
         var groceryList = await _ingredientService.GenerateGroceryListAsync(userId);
 
         return View("GroceryList", groceryList);
@@ -106,25 +104,36 @@ public class IngredientsController : Controller
     // GET: Ingredients/Create
     public IActionResult Create()
     {
-        return View();
+        return View(new IngredientCreateViewModel());
     }
 
     // POST: Ingredients/Create
     [HttpPost]
-    public async Task<IActionResult> Create(Ingredient ingredient)
+    public async Task<IActionResult> Create(IngredientCreateViewModel model)
     {
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
         {
-            var result = await _ingredientService.AddIngredientAsync(ingredient);
-            if (result)
-            {
-                return RedirectToAction(nameof(Index));
-            }
+            return View(model);
         }
-        return View(ingredient);
+
+        var ingredient = new Ingredient
+        {
+            Name = model.Name,
+            Type = model.Type
+        };
+
+        var result = await _ingredientService.AddIngredientAsync(ingredient);
+        if (result)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        ModelState.AddModelError("", "Kunde inte skapa ingrediensen.");
+        return View(model);
     }
 
-    // GET: Ingredients/Edit
+
+    // GET: Ingredients/Edit OBS ENDAST ADMIN EJ MED I FRONT END EJJ TILLÄMPAT
     public async Task<IActionResult> Edit(int id)
     {
         var ingredient = await _ingredientService.GetIngredientByIdAsync(id);
@@ -134,7 +143,7 @@ public class IngredientsController : Controller
         return View(ingredient);
     }
 
-    // POST: Ingredients/Edit
+    // POST: Ingredients/Edit OBS ENDAST ADMIN EJ MED I FRONT END EJJ TILLÄMPAT
     [HttpPost]
     public async Task<IActionResult> Edit(int id, Ingredient ingredient)
     {
@@ -164,7 +173,6 @@ public class IngredientsController : Controller
         if (userId == null)
             return Unauthorized();
 
-        // Use a new service method name to fetch the user's ingredient
         var userIngredient = await _ingredientService.FetchUserIngredientAsync(userId, ingredientId);
         if (userIngredient == null)
             return NotFound();
@@ -190,12 +198,10 @@ public class IngredientsController : Controller
             return View(model);
         }
 
-        // Use a new service method name for updating the quantity
         var success = await _ingredientService.UpdateUserIngredientQuantityAsync(userId, model.IngredientId, model.Quantity);
         if (!success)
             return NotFound();
 
         return RedirectToAction(nameof(MyIngredients));
     }
-
 }
