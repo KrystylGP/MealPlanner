@@ -47,13 +47,11 @@ public class MealPlansController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(MealPlanCreateViewModel model)
     {
-        // Kolla vanlig modelvalidering
         if (!ModelState.IsValid)
         {
             model.Meals = await _mealPlanService.GetAllMealSelectionsAsync();
             return View(model);
         }
-
 
         if (!model.Meals.Any(m => m.Selected))
         {
@@ -76,8 +74,6 @@ public class MealPlansController : Controller
 
         return RedirectToAction(nameof(Index));
     }
-
-
 
     // GET: MealPlans/Edit
     public async Task<IActionResult> Edit(int id)
@@ -103,7 +99,6 @@ public class MealPlansController : Controller
 
         return View(viewModel);
     }
-
 
     // POST: MealPlans/Edit
     [HttpPost]

@@ -62,6 +62,5 @@ namespace MealPlanner.Data.Repositories
                 return false;
             }
         }
-
     }
 }

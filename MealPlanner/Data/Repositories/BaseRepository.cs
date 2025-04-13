@@ -58,7 +58,6 @@ public abstract class BaseRepository<TEntity> where TEntity : class
         return exists;
     }
 
-
     public virtual async Task<bool> UpdateAsync(TEntity entity)
     {
         try

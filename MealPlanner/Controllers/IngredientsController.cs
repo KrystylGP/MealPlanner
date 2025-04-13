@@ -28,7 +28,7 @@ public class IngredientsController : Controller
     }
 
 
-    // Visar MyIngredients (användarens ingredienser hemma)
+    // GET: Visar MyIngredients (användarens ingredienser hemma)
     public async Task<IActionResult> MyIngredients()
     {
         var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -88,6 +88,7 @@ public class IngredientsController : Controller
         return NotFound();
     }
 
+    // GET: Visar GroceryList
     public async Task<IActionResult> GroceryList()
     {
         var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -99,7 +100,6 @@ public class IngredientsController : Controller
 
         return View("GroceryList", groceryList);
     }
-
 
     // GET: Ingredients/Create
     public IActionResult Create()
@@ -133,7 +133,7 @@ public class IngredientsController : Controller
     }
 
 
-    // GET: Ingredients/Edit OBS ENDAST ADMIN EJ MED I FRONT END EJJ TILLÄMPAT
+    // GET: Ingredients/Edit (OBS, ej tillämpat i frontend pga olämplig för base user)
     public async Task<IActionResult> Edit(int id)
     {
         var ingredient = await _ingredientService.GetIngredientByIdAsync(id);
@@ -143,7 +143,7 @@ public class IngredientsController : Controller
         return View(ingredient);
     }
 
-    // POST: Ingredients/Edit OBS ENDAST ADMIN EJ MED I FRONT END EJJ TILLÄMPAT
+    // POST: Ingredients/Edit (OBS, ej tillämpat i frontend pga olämplig för base user)
     [HttpPost]
     public async Task<IActionResult> Edit(int id, Ingredient ingredient)
     {

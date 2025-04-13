@@ -32,7 +32,6 @@ namespace MealPlanner.Services
             return _repository.CreateMealFromViewModelAsync(model);
         }
 
-
         public Task<bool> UpdateMealAsync(Meal meal) =>
             _repository.UpdateAsync(meal);
 

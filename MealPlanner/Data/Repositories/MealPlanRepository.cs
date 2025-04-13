@@ -106,5 +106,4 @@ public class MealPlanRepository : BaseRepository<MealPlan>
             return false;
         }
     }
-
 }

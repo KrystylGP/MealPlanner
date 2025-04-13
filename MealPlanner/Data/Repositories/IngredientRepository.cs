@@ -28,7 +28,6 @@ public class IngredientRepository : BaseRepository<Ingredient>
             .FirstOrDefaultAsync(ui => ui.UserId == userId && ui.IngredientId == ingredientId);
     }
 
-
     public Task AddUserIngredientAsync(UserIngredient userIngredient)
     {
         _context.UserIngredients.Add(userIngredient);
@@ -48,7 +47,6 @@ public class IngredientRepository : BaseRepository<Ingredient>
             return false;
         }
     }
-
 
     public Task<List<UserIngredient>> GetUserStockByUserIdAsync(string userId)
     {
@@ -78,13 +76,11 @@ public class IngredientRepository : BaseRepository<Ingredient>
         }
     }
 
-    // Get an ingredient by Id
     public async Task<Ingredient?> GetAsync(Expression<Func<Ingredient, bool>> expression)
     {
         return await _dbSet.FirstOrDefaultAsync(expression);
     }
 
-    // Update an ingredient
     public async Task<bool> UpdateAsync(Ingredient ingredient)
     {
         try
@@ -98,6 +94,4 @@ public class IngredientRepository : BaseRepository<Ingredient>
             return false;
         }
     }
-
-
 }

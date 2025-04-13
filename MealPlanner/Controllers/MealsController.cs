@@ -35,6 +35,7 @@ namespace MealPlanner.Controllers
             return View(viewModel);
         }
 
+        // POST: Meals/Create
         [HttpPost]
         public async Task<IActionResult> Create(MealCreateViewModel model)
         {
@@ -55,9 +56,7 @@ namespace MealPlanner.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
-
-        // GET: Meals/Edit OBS ENDAST ADMIN EJ MED I FRONT END EJJ TILLÄMPAT
+        // GET: Meals/Edit (OBS, ej tillämpat i frontend pga olämplig för base user)
         public async Task<IActionResult> Edit(int id)
         {
             var meal = await _mealService.GetMealByIdAsync(id);
@@ -67,7 +66,7 @@ namespace MealPlanner.Controllers
             return View(meal);
         }
 
-        // POST: Meals/Edit OBS ENDAST ADMIN EJ MED I FRONT END EJJ TILLÄMPAT
+        // POST: Meals/Edit (OBS, ej tillämpat i frontend pga olämplig för base user)
         [HttpPost]
         public async Task<IActionResult> Edit(int id, Meal meal)
         {
@@ -85,7 +84,7 @@ namespace MealPlanner.Controllers
             return View(meal);
         }
 
-        // GET: Meals/Delete OBS ENDAST ADMIN EJ MED I FRONT END EJJ TILLÄMPAT
+        // GET: Meals/Delete (OBS, ej tillämpat i frontend pga olämplig för base user)
         public async Task<IActionResult> Delete(int id)
         {
             var meal = await _mealService.GetMealByIdAsync(id);
@@ -95,7 +94,7 @@ namespace MealPlanner.Controllers
             return View(meal);
         }
 
-        // POST: Meals/Delete OBS ENDAST ADMIN EJ MED I FRONT END EJJ TILLÄMPAT
+        // POST: Meals/Delete (OBS, ej tillämpat i frontend pga olämplig för base user)
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

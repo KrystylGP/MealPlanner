@@ -37,12 +37,11 @@ public class MealPlanService
             EndDate = model.EndDate,
             Status = model.Status,
             UserId = userId,
-            Meals = selectedMealIds.Select(id => new Meal { Id = id }).ToList() // EF Core kommer att koppla dessa via Id
+            Meals = selectedMealIds.Select(id => new Meal { Id = id }).ToList()
         };
 
         return await _mealPlanRepository.AddAsync(mealPlan);
     }
-
 
     public async Task<List<MealSelectionViewModel>> GetAllMealSelectionsAsync()
     {
@@ -85,6 +84,7 @@ public class MealPlanService
 
         return await _mealPlanRepository.UpdateMealPlanAsync(mealPlan);
     }
+
     public Task<MealPlan?> GetMealPlanForUserByIdAsync(int id, string userId)
     {
         return _mealPlanRepository.GetMealPlanForUserByIdAsync(id, userId);
@@ -98,6 +98,4 @@ public class MealPlanService
 
         return await _mealPlanRepository.DeleteAsync(mealPlan);
     }
-
-
 }
